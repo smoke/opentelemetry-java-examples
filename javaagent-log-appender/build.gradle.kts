@@ -49,5 +49,8 @@ application {
 tasks.named<JavaExec>("run") {
     doFirst {
         jvmArgs("-javaagent:${agent.singleFile}")
+        // disable the OpenTelemetry JavaAgent brought `log4j-appender`
+        // as we bring our own that is configured from `log4j2.xml`
+        jvmArgs("-Dotel.instrumentation.log4j-appender.enabled=false")
     }
 }
