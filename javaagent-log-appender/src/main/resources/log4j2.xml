@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
+    <Properties>
+        <Property name="logLevel" value="${env:LOG_LEVEL:-info}"/>
+        <Property name="otel.x.log_sending.disabled" value="${env:OTEL_X_LOG_SENDING_DISABLED}"/>
+        <Property name="otel.x.log_sending.level" value="${env:OTEL_X_LOG_SENDING_LEVEL:-all}"/>
+    </Properties>
     <Appenders>
         <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="log4j2: %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
+        <Select>
+            <SystemPropertyArbiter propertyName="otel.x.log_sending.disabled" propertyValue="true">
+                <!-- noop -->
+            </SystemPropertyArbiter>
+            <DefaultArbiter>
+                <OpenTelemetry name="OpenTelemetryAppender" captureMapMessageAttributes="true" captureExperimentalAttributes="true"/>
+            </DefaultArbiter>
+        </Select>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <Root level="${logLevel}">
             <AppenderRef ref="ConsoleAppender" />
+            <Select>
+                <SystemPropertyArbiter propertyName="otel.x.log_sending.disabled" propertyValue="true">
+                    <!-- noop -->
+                </SystemPropertyArbiter>
+                <DefaultArbiter>
+                    <AppenderRef ref="OpenTelemetryAppender" level="${otel.x.log_sending.level}" />
+                </DefaultArbiter>
+            </Select>
         </Root>
     </Loggers>
 </Configuration>

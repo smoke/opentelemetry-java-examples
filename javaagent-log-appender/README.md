@@ -46,6 +46,14 @@ OTEL_LOGS_EXPORTER=otlp
 ../gradlew run
 ```
 
+Allows usage of these env vars or system properties defined in `log4j2.xml`:
+- `LOG_LEVEL` env var or `logLevel` property - controls the log4j2 Root (and inherited) loggers
+level
+- `OTEL_X_LOG_SENDING_DISABLED` env var or `otel.x.log_sending.disabled` property - set to "true" to fully disable the
+`OpenTelemetryAppender`
+- `OTEL_X_LOG_SENDING_LEVEL` env var or `otel.x.log_sending.level` property - defaults to "all", set to relevant log4j2 [Level](https://logging.apache.org/log4j/2.x/manual/customloglevels.html)
+(`off`, `fatal`, `error`, `warn`, `info`, `debug`, `trace`, `all`) to additionally filter what goes to Otel Collector
+
 Watch the collector logs to see exported log records
 
 NOTE: The OpenTelemetry Java Agent uses `http/protobuf` by default, optionally switch to use `grpc` protocol
